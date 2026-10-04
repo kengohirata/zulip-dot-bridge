@@ -1,0 +1,27 @@
+# Review paths/user against your host before installing. No automatic enablement.
+[Unit]
+Description=Portable Zulip MCP bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=zulip-bridge
+Group=zulip-bridge
+WorkingDirectory=/opt/zulip-dot-bridge/backend
+EnvironmentFile=/etc/zulip-mcp/bridge.env
+ExecStart=/usr/bin/python3 /opt/zulip-dot-bridge/backend/portable.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+StateDirectory=zulip-mcp
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/zulip-mcp
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

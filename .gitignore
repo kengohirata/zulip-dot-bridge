@@ -1,0 +1,44 @@
+# Runtime secrets and authentication material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+zuliprc
+.zuliprc
+.aws/
+.codex/
+.credentials/
+credentials.json
+service-account*.json
+# Deployment-specific local configuration
+**/.openai/hosting.json
+backend/aws/config.json
+backend/aws/config.local.json
+samconfig.toml
+samconfig.yaml
+.aws-sam/
+.sites-runtime/
+# Runtime state and logs
+state/
+*.sqlite*
+*.portable.lock
+*.db
+*.db-*
+*.log
+# Dependencies and generated artifacts
+node_modules/
+dist/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+site.tar.gz
+*.zip
+*.tar.gz
+# Editor / operating system files
+.DS_Store
+.vscode/
+.idea/

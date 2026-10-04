@@ -1,0 +1,226 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Single-owner Zulip bridge behind an authenticated private Site. No model API.
+Parameters:
+  ConfigParameterName:
+    Type: String
+    Default: /zulip-dot-bridge/config
+    AllowedPattern: '^/[a-zA-Z0-9_./-]+$'
+    Description: User-created SSM Standard SecureString parameter using aws/ssm key
+  ProcessingEnabled:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['false', 'true']
+    Description: Keep false until SSM SecureString and Site preflight are configured
+Conditions:
+  StartProcessing: !Equals [!Ref ProcessingEnabled, 'true']
+Resources:
+  StateTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: bucket
+          AttributeType: S
+        - AttributeName: due
+          AttributeType: N
+      GlobalSecondaryIndexes:
+        - IndexName: pending-work-index
+          KeySchema:
+            - AttributeName: bucket
+              KeyType: HASH
+            - AttributeName: due
+              KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 1209600
+      SqsManagedSseEnabled: true
+  WorkQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 360
+      MessageRetentionPeriod: 345600
+      SqsManagedSseEnabled: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
+        maxReceiveCount: 8
+  BridgeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: lambda.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: BridgeScopedResources
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}-bridge:*'
+              - Effect: Allow
+                Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:DeleteItem, dynamodb:Query]
+                Resource:
+                  - !GetAtt StateTable.Arn
+                  - !Sub '${StateTable.Arn}/index/pending-work-index' 
+              - Effect: Allow
+                Action: ssm:GetParameter
+                Resource: !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${ConfigParameterName}'
+              - Effect: Allow
+                Action: [sqs:SendMessage, sqs:ReceiveMessage, sqs:DeleteMessage, sqs:GetQueueAttributes, sqs:ChangeMessageVisibility]
+                Resource: !GetAtt WorkQueue.Arn
+  IngressRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: lambda.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: EnqueueOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}-ingress:*'
+              - Effect: Allow
+                Action: ssm:GetParameter
+                Resource: !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${ConfigParameterName}'
+              - Effect: Allow
+                Action: sqs:SendMessage
+                Resource: !GetAtt WorkQueue.Arn
+  IngressLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-ingress'
+      RetentionInDays: 7
+  IngressFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: IngressLogGroup
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-ingress'
+      CodeUri: ../
+      Handler: aws.ingress.handler
+      Runtime: python3.12
+      Architectures: [arm64]
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt IngressRole.Arn
+      Environment:
+        Variables:
+          CONFIG_PARAMETER_NAME: !Ref ConfigParameterName
+          WORK_QUEUE_URL: !Ref WorkQueue
+  IngressUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref IngressFunction
+      AuthType: NONE
+      InvokeMode: BUFFERED
+  IngressUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref IngressFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+  IngressInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref IngressFunction
+      Action: lambda:InvokeFunction
+      Principal: '*'
+      InvokedViaFunctionUrl: true
+  BridgeLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-bridge'
+      RetentionInDays: 7
+  BridgeFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: BridgeLogGroup
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-bridge'
+      CodeUri: ../
+      Handler: aws.app.handler
+      Runtime: python3.12
+      Architectures: [arm64]
+      MemorySize: 256
+      Timeout: 60
+      ReservedConcurrentExecutions: 1
+      Role: !GetAtt BridgeRole.Arn
+      Environment:
+        Variables:
+          CONFIG_PARAMETER_NAME: !Ref ConfigParameterName
+          STATE_TABLE: !Ref StateTable
+          WORK_QUEUE_URL: !Ref WorkQueue
+      Events:
+        Worker:
+          Type: SQS
+          Properties:
+            Enabled: !If [StartProcessing, true, false]
+            Queue: !GetAtt WorkQueue.Arn
+            BatchSize: 1
+            FunctionResponseTypes: [ReportBatchItemFailures]
+        Recover:
+          Type: Schedule
+          Properties:
+            Schedule: rate(5 minutes)
+            Enabled: !If [StartProcessing, true, false]
+            Description: Recover durable outbox after queue-send failures
+  FunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref BridgeFunction
+      AuthType: NONE
+      InvokeMode: BUFFERED
+  UrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref BridgeFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+  UrlInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref BridgeFunction
+      Action: lambda:InvokeFunction
+      Principal: '*'
+      InvokedViaFunctionUrl: true
+Outputs:
+  ZulipWebhookUrl:
+    Value: !Sub '${IngressUrl.FunctionUrl}zulip/events'
+  FunctionUrl:
+    Value: !GetAtt FunctionUrl.FunctionUrl
+  ConfigParameterName:
+    Value: !Ref ConfigParameterName
+  StateTableName:
+    Value: !Ref StateTable
+  WorkQueueUrl:
+    Value: !Ref WorkQueue
+  DeadLetterQueueUrl:
+    Value: !Ref DeadLetterQueue
+  FunctionName:
+    Value: !Ref BridgeFunction

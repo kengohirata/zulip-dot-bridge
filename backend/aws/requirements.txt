@@ -1,0 +1,1 @@
+# No third-party dependencies beyond boto3 included in AWS Lambda Python runtime.

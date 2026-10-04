@@ -1,0 +1,233 @@
+{
+  "format_version": 1,
+  "snapshot_date": "2026-10-04",
+  "history_policy": "Clean source import; prior repository history and deployment provenance excluded",
+  "excluded_categories": [
+    "Credentials and authentication caches",
+    "Runtime .env and actual deployment hosting.json",
+    "Node modules and compiled output",
+    "Databases, messages, logs, private research and unrelated files",
+    "Private deployment provenance and original-source configuration hashes"
+  ],
+  "imported_files": [
+    {
+      "path": "backend/.env.example",
+      "sha256": "5c01d2d39e8587fb6f99803decb73a21229553e8ccac9e791f9916926bcc14ca",
+      "changes": [
+        "Replaced organization or deployment address with an example",
+        "Updated for primary cloud-independent Outgoing-webhook server"
+      ]
+    },
+    {
+      "path": "backend/.gitignore",
+      "sha256": "50307db802cce775e8843caa5aab8a399e89f7b7b1faa04847896bab0c0c4a51",
+      "changes": []
+    },
+    {
+      "path": "backend/README.md",
+      "sha256": "5eea1242d3d4ed671f41291eafd4278f5f8aebb26720e8d0e2413eba9e1b14de",
+      "changes": [
+        "Replaced organization or deployment address with an example",
+        "Linked primary portable route and labeled historical core notes"
+      ]
+    },
+    {
+      "path": "backend/bridge.py",
+      "sha256": "654414c963a58fbf60db8c5077629714cfdfc67305257e7a92b4f6c51a8d9c11",
+      "changes": []
+    },
+    {
+      "path": "backend/tests/test_bridge.py",
+      "sha256": "961daf4b8b3ade5fd86ad84b625d91f8fa2e0eb034baaa867d258cd607a327dd",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/README.ja.md",
+      "sha256": "2df967a210f06cebd9a54de321dc12e6864ba540b11a7a0bc38f99996c60b77e",
+      "changes": [
+        "Replaced organization or deployment address with an example",
+        "Clarified optional AWS setup from public repository"
+      ]
+    },
+    {
+      "path": "backend/aws/VALIDATION.md",
+      "sha256": "326d4ae97172299f6c9c23b9ea37125cdbafd2414e2eeefb669cd4db324c957a",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/__init__.py",
+      "sha256": "bd1bd0e3236a1ad52afc15e56401f608ed2b7ad704217c33266ab9f354ef772d",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/app.py",
+      "sha256": "32df4fa3d612da34d44f0c88a5b9158527e6a0f6659cd61fa642b7443d689a67",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/config.example.json",
+      "sha256": "c9bff61f542f457dbdf9c37e45ff68e0a6f91df5e4d8c23ea1958d7c3f68f7aa",
+      "changes": [
+        "Replaced organization or deployment address with an example"
+      ]
+    },
+    {
+      "path": "backend/aws/ingress.py",
+      "sha256": "586b066e4e24496990bf2fc5d631a3c12adf8ba8993e54c50940a3cb4df5f5b9",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/requirements.txt",
+      "sha256": "77cfedc1c53062adace0023ce14a2260c7622822a45a1066063a7d65be63a727",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/state.py",
+      "sha256": "b847086342e61f9a716536b08efb8ee2f46270789162348d78f915a6db3ae75e",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/template.yaml",
+      "sha256": "49e26269c78641c2363c36c76ba5621b60bdbae8088a7a866fd95569959e4bd1",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/test_checkpoint.py",
+      "sha256": "86efd701137be9c763d1f1bc038283e9cded3676d67a6923ac9f90f8e53df649",
+      "changes": []
+    },
+    {
+      "path": "backend/aws/test_state.py",
+      "sha256": "66c508516ef9cc4e6b1d37ee30edbdfa53b02d39ce7d67ddf443ab3f8ec54f4b",
+      "changes": []
+    },
+    {
+      "path": "site/.gitignore",
+      "sha256": "4256f007cea421b3cd25daa578ee111c33dd15acb9569b134ec1b473f7f31f53",
+      "changes": [
+        "Added ignores for local deployment identity and runtime secrets"
+      ]
+    },
+    {
+      "path": "site/.openai/hosting.example.json",
+      "sha256": "24b50db230a526b18ce9677ed00f7c7932fc84636e7441aea66c058111311be8",
+      "changes": [
+        "Replaced deployment project ID with placeholder; renamed to an example"
+      ]
+    },
+    {
+      "path": "site/README.md",
+      "sha256": "708e36e77be71b9640bba834bc38c4e8ae56a567b779a350e93d7e0a2470621f",
+      "changes": [
+        "Documented optional AWS-only gateway limitation"
+      ]
+    },
+    {
+      "path": "site/db/schema.ts",
+      "sha256": "a86af385d22e8eb6c4ce6e5ef1091b6355267551d2dafac449f89f32d4deaceb",
+      "changes": []
+    },
+    {
+      "path": "site/drizzle.config.ts",
+      "sha256": "39966f3818721bb8bbc31f33ed0eeeaa35878d81a330127a1936b1b334e39ab8",
+      "changes": []
+    },
+    {
+      "path": "site/drizzle/0000_dusty_proemial_gods.sql",
+      "sha256": "16a4eec99fa713e56bd8b40126cb4e2a09c331e88344722c03fae63d41e146d9",
+      "changes": []
+    },
+    {
+      "path": "site/drizzle/meta/0000_snapshot.json",
+      "sha256": "5dd703b21d3d595ef9f0838b2fa17bd777577b17152a6f632b0e8c437a3e4c58",
+      "changes": []
+    },
+    {
+      "path": "site/drizzle/meta/_journal.json",
+      "sha256": "68e217135c19e894bccbbb4bfe08b835ab19d191e2ca1eb95c2f19807689cd22",
+      "changes": []
+    },
+    {
+      "path": "site/package-lock.json",
+      "sha256": "d9e51603bcfee332ddd796b6f49dc135e14326613a585785d5898b4d6c249ead",
+      "changes": []
+    },
+    {
+      "path": "site/package.json",
+      "sha256": "973d6f1ea87be22a566215170d1af5debca7eb487b4ced7ba6d98df541d5a881",
+      "changes": []
+    },
+    {
+      "path": "site/scripts/build.sh",
+      "sha256": "abf2a6dd03ac1eb4969977225a3eff181e2d61596c18dc3c0fc3d1b1eb86be86",
+      "changes": []
+    },
+    {
+      "path": "site/scripts/test-bridge.mjs",
+      "sha256": "0345d3ea6f5ac27cbfb25affb43b8ea498ac27765e261855eff8efa475433845",
+      "changes": []
+    },
+    {
+      "path": "site/scripts/test-probe.mjs",
+      "sha256": "30027cef32103d9646eeeade095cb1c632d956423a89bc449e1994fc268fe998",
+      "changes": []
+    },
+    {
+      "path": "site/scripts/validate-artifact.mjs",
+      "sha256": "39d9df53ac2461962466d5965c5f4d06f08024ceca40605952d8b753b88d41fd",
+      "changes": []
+    },
+    {
+      "path": "site/worker/index.js",
+      "sha256": "53f9185afa505df38f84b4a783652c50143c0bf5c41e7d543f58b56329ccf79b",
+      "changes": []
+    }
+  ],
+  "added_files": [
+    {
+      "path": ".gitignore",
+      "sha256": "eee0799fc2da79c281a0383fd5d2be908003046a29c0e4dea225d974da4f6537"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "README.md",
+      "sha256": "76e8d3c9c0b69777940c302b7d90403339a37268439e791683f81df5c08de28d"
+    },
+    {
+      "path": "backend/portable.py",
+      "sha256": "f8a93f69d02a7bf4aeb09135727331ca28aa7caf1ac6e98cb85c03b2cf303a19"
+    },
+    {
+      "path": "backend/tests/test_portable.py",
+      "sha256": "060c489be4d2c01e3b88c0e2a2e3d1c8ffc9a21c124bc4ad3b1e5b31f592bbc1"
+    },
+    {
+      "path": "deploy/nginx.conf.example",
+      "sha256": "e420259f2342fd54617675aa8263df9d971cef62707509c3703c6bcd4239b0a8"
+    },
+    {
+      "path": "deploy/zulip-mcp.service.example",
+      "sha256": "da94011da50d1e55e383a7a07ae66a0d94a73ce5db9c782e470afc05e0b9c318"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "sha256": "f14a2371c683233c6eb6da4ccbfec435ac6d47808335818c001a4a08fe0ddd4a"
+    },
+    {
+      "path": "docs/SELF_HOSTING.md",
+      "sha256": "215b4d0acdabe8b75a3c7c2aef9ef6316dd5e30846a2a1cb47f889303e7fd761"
+    },
+    {
+      "path": "docs/VALIDATION.md",
+      "sha256": "0e9b8858421f9812361c72511717e5614e918703ecc7a19f18b5c1b9cea0513e"
+    },
+    {
+      "path": "scripts/check.sh",
+      "sha256": "ae8a79f73ec13fabb76c700e98533019aee37e5531d375479e0689901fa169a9"
+    }
+  ],
+  "license_note": "Existing public repository LICENSE retained unchanged"
+}

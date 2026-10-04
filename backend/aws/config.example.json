@@ -1,0 +1,11 @@
+{
+  "zulip_realm": "https://your-organization.zulipchat.com",
+  "zulip_bot_email": "REPLACE_WITH_NEW_OUTGOING_BOT_EMAIL",
+  "zulip_bot_id": 0,
+  "zulip_api_key": "REPLACE_DIRECTLY_IN_AWS_CONSOLE",
+  "zulip_webhook_token": "REPLACE_DIRECTLY_IN_AWS_CONSOLE",
+  "bridge_proxy_secret": "REPLACE_WITH_DISTINCT_32_BYTE_RANDOM_SECRET",
+  "bridge_owner": "private-site-owner",
+  "subscriptions_enabled": false,
+  "webhook_ready": false
+}

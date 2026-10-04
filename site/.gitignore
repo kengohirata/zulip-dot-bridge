@@ -1,0 +1,10 @@
+dist/
+site.tar.gz
+node_modules/
+.sites-runtime/
+
+# Deployment identity and runtime secrets stay local.
+.openai/hosting.json
+.env
+.env.*
+!.env.example
